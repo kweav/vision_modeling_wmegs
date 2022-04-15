@@ -42,4 +42,4 @@ python bin/JointCRE_reformatted.py -r data/mm10_rna_all.npy data/hg38_rna_all.np
   -g mm10 hg38 -o results -v 3
 ```
 
-In order to leave out on celltype, use the `-l mm10,CLP` for example. To run controls, use `--shuffle cre` or `shuffle tss`.
+In order to leave out on celltype, use the `-l mm10,CLP` for example. To run controls, use `--shuffle cre` or `--shuffle tss`.
