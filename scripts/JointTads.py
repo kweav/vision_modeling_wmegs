@@ -913,7 +913,7 @@ class GenomeData(object):
                                           dtype=numpy.float32)
             RNA = numpy.copy(self.rna['rna'][tstart:tend, self.lo_mask])
             jstart, jend = self.joint_indices[c:(c+2)]
-            joint = self.joint_EP[jstart:jend, :]
+            joint = numpy.copy(self.joint_EP[jstart:jend, :])
             coords = self.joint_coords[jstart:jend]
             TSSs = numpy.where(joint[:, 1] == 1)[0].astype(numpy.int32)
             cre = numpy.where(joint[:, 1] == 0)[0]

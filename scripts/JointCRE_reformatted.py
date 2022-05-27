@@ -165,7 +165,7 @@ class LinReg(object):
 		else:
 			for i in range(self.genomeN):
 				self.data[i].find_nearest_gene_pairs()
-				self.data[i].find_features_ngp()
+				self.data[i].find_features_ng()
 		self.get_features()
 		self.get_betas()
 		self.write_results()
@@ -265,8 +265,8 @@ class LinReg(object):
 			pfeatures = self.pfeatures
 		if cfeatures is None:
 			cfeatures = self.cfeatures
-		pred = numpy.sum(self.pfeatures * self.betas[:1, :] +
-						 self.cfeatures * self.betas[-1:, :], axis=1)
+		pred = numpy.sum(pfeatures * self.betas[:1, :] +
+						 cfeatures * self.betas[-1:, :], axis=1)
 		return pred
 
 	def tad_stats(self):
@@ -696,7 +696,7 @@ class GenomeData(object):
 	def assign_CRE_states(self):
 		"""Find the proportion of states in each cCRE"""
 		if self.verbose >= 2:
-			print("\r{' '*80}\rAssign states to {self.genome} CREs",
+			print(f"\r{' '*80}\rAssign states to {self.genome} CREs",
 				  end='', file=sys.stderr)
 		# Find ranges of states for each CRE
 		Cranges = numpy.zeros((self.cre.shape[0], 2), dtype=numpy.int32)
@@ -868,6 +868,7 @@ class GenomeData(object):
 				ng_pairs[k, :] = numpy.array([indices_CREs[k], gene_closest_indice])
 
 		self.ng_pairs = ng_pairs
+		print("\r{}\r".format(' ' * 80), end='', file=sys.stderr)
 
 	def find_features(self):
 		for s, e in self.tads:
@@ -995,7 +996,7 @@ class GenomeData(object):
 		print(f"TSS-Chr\tTSS-Coord\t{temp}", file=output)
 		for j in range(self.tssN):
 			gene = self.rna[j]
-			temp = "\t".join(["{:.4f}".format(x) for x in expression[j, :]])
+			temp = "\t".join(["{:.4f}".format(x) for x in predicted[j, :]])
 			print(f"{gene['chr']}\t{gene['TSS']}\t{temp}", file=output)
 		output.close()
 
