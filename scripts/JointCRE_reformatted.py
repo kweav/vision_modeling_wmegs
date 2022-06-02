@@ -794,7 +794,7 @@ class GenomeData(object):
 
 	def find_tss_cre_pairs(self):
 		if self.verbose >= 2:
-			print("\r{' '*80}\rFinding {self.genome} TSS-cCRE pairs",
+			print(f"\r{' '*80}\rFinding {self.genome} TSS-cCRE pairs",
 				  end='', file=sys.stderr)
 		joint_EP = numpy.zeros((self.tssN + self.creN, 4), dtype=numpy.int32)
 		joint_coords = numpy.zeros(self.tssN + self.creN, dtype=numpy.int32)
@@ -937,7 +937,7 @@ class GenomeData(object):
 									axis=2).astype(numpy.float32)
 			RNA = numpy.copy(self.rna['rna'][tstart:tend, self.lo_mask])
 			jstart, jend = self.joint_indices[c:(c+2)]
-			joint = self.joint_EP[jstart:jend, :]
+			joint = numpy.copy(self.joint_EP[jstart:jend, :])
 			coords = self.joint_coords[jstart:jend]
 			TSSs = numpy.where(joint[:, 1] == 1)[0].astype(numpy.int32)
 			cre = numpy.where(joint[:, 1] == 0)[0]
@@ -1030,7 +1030,7 @@ class GenomeData(object):
 								 betas[-1, :].reshape(1, 1, -1), axis=2)
 			for i in TSSs:
 				TSS = self.rna[i]
-				promoter = numpy.sum(self.fpeatures[i, :, :] *
+				promoter = numpy.sum(self.pfeatures[i, :, :] *
 									 betas[:1, :], axis=1)
 				temp = "\t".join([f"{x}" for x in promoter])
 				print(f"{TSS['chr']}\t{TSS['TSS']}\t{-1}\t{-1}\t{temp}",
