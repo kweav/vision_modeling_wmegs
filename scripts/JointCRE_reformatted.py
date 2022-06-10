@@ -27,7 +27,7 @@ def generate_parser():
 						nargs="+", help="RNA expression files")
 	parser.add_argument('-s', '--state', dest="state", type=str, action='store', required=True,
 						nargs="+", help="State files")
-	parser.add_argument('-c', '--cre', dest="cre", type=str, action='store', required=True,
+	parser.add_argument('-c', '--cre', dest="cre", type=str, action='store',
 						nargs="+", help="CRE files")
 	parser.add_argument('-g', '--genome', dest="genome", type=str, action='store', required=True,
 						nargs="+", help="Species names")
@@ -83,7 +83,12 @@ class LinReg(object):
 		self.cre_fnames = cre
 		self.genomes = genomes
 		self.genomeN = len(self.genomes)
-		assert len(self.cre_fnames) == self.genomeN
+		if self.cre_fnames is not None:
+			assert len(self.cre_fnames) == self.genomeN
+			self.use_cres = True
+		else:
+			self.cre_fnames = [None] * self.genomeN
+			self.use_cres = False
 		assert len(self.state_fnames) == self.genomeN
 		assert len(self.rna_fnames) == self.genomeN
 		self.data = []
@@ -122,7 +127,10 @@ class LinReg(object):
 		self.out_prefix = out_prefix
 		self.initialization_dist = initialization_dist
 		self.cre_dist = cre_dist
+		self.use_cres = self.use_cres and self.cre_dist > 0
 		self.promoter_dist = promoter_dist
+		self.use_promoters = self.promoter_dist > 0
+		assert self.use_cres or self.use_promoters
 		self.shuffle = shuffle
 		self.seed = seed
 		if self.seed is None:
@@ -158,28 +166,31 @@ class LinReg(object):
 		self.get_betas()
 		self.logger.info("Got initial betas")
 
-		for i in range(self.genomeN):
-			self.data[i].find_tss_cre_pairs()
-		if self.select_refine:
-			self.refine_tads()
-		else:
+		if self.use_cres:
 			for i in range(self.genomeN):
-				self.data[i].find_nearest_gene_pairs()
-				self.data[i].find_features_ng()
-		self.get_features()
-		self.get_betas()
+				self.data[i].find_tss_cre_pairs()
+			if self.select_refine:
+				self.refine_tads()
+			else:
+				for i in range(self.genomeN):
+					self.data[i].find_nearest_gene_pairs()
+					self.data[i].find_features_ng()
+			self.get_features()
+			self.get_betas()
 		self.write_results()
 
 	def get_features(self):
 		features = []
 		for i in range(self.genomeN):
+			x, y, z = self.data[i].pfeatures.shape
 			features.append(self.data[i].pfeatures[
-				:, self.lo_mask[i], :].reshape(-1, self.stateN, order="c"))
+				:, self.lo_mask[i], :].reshape(x * y, z, order="c"))
 		self.pfeatures = numpy.concatenate(features, axis=0)
 		features = []
 		for i in range(self.genomeN):
+			x, y, z = self.data[i].cfeatures.shape
 			features.append(self.data[i].cfeatures[
-				:, self.lo_mask[i], :].reshape(-1, self.stateN, order="c"))
+				:, self.lo_mask[i], :].reshape(x * y, z, order="c"))
 		self.cfeatures = numpy.concatenate(features, axis=0)
 		if self.lint is not None:
 			self.lo_pfeatures = self.data[self.lint[0]].pfeatures[:, self.lint[1], :]
@@ -265,8 +276,12 @@ class LinReg(object):
 			pfeatures = self.pfeatures
 		if cfeatures is None:
 			cfeatures = self.cfeatures
-		pred = numpy.sum(pfeatures * self.betas[:1, :] +
-						 cfeatures * self.betas[-1:, :], axis=1)
+		if self.use_promoters:
+			pred = numpy.sum(pfeatures * self.betas[:1, :], axis=1)
+			if self.use_cres:
+				pred += numpy.sum(cfeatures * self.betas[1:, :], axis=1)
+		else:
+			pred = numpy.sum(cfeatures * self.betas[:, :], axis=1)
 		return pred
 
 	def tad_stats(self):
@@ -285,17 +300,19 @@ class LinReg(object):
 		self.write_betas()
 		self.write_correlations()
 		for i in range(self.genomeN):
-			self.data[i].write_tads(self.out_prefix)
+			if self.use_cres:
+				self.data[i].write_tads(self.out_prefix)
+				self.data[i].write_pairs(self.betas, self.out_prefix)
 			self.data[i].write_expression(self.betas, self.out_prefix)
 			if self.shuffle != 'none':
 				self.data[i].write_order(self.out_prefix)
-			self.data[i].write_pairs(self.betas, self.out_prefix)
 
 	def write_settings(self):
 		output = open('{}_settings.txt'.format(self.out_prefix), 'w')
 		print("rna file(s) = {}".format(", ".join(self.rna_fnames)), file=output)
 		print("state file(s) = {}".format(", ".join(self.state_fnames)), file=output)
-		print("cre file(s) = {}".format(", ".join(self.cre_fnames)), file=output)
+		if self.use_cres:
+			print("cre file(s) = {}".format(", ".join(self.cre_fnames)), file=output)
 		print("genome(s) = {}".format(", ".join(self.genomes)), file=output)
 		if self.lessone is not None:
 			print("lessone = {}".format(", ".join(self.lessone.split(","))), file=output)
@@ -310,10 +327,13 @@ class LinReg(object):
 	def write_betas(self):
 		output = open("{}_betas.txt".format(self.out_prefix), "w")
 		print("Feature\tState\tBeta", file=output)
-		for i in range(self.stateN):
-			print("Promoter\t{}\t{}".format(i, self.betas[0, i]), file=output)
-		for i in range(self.stateN):
-			print("CRE\t{}\t{}".format(i, self.betas[-1, i]), file=output)
+		if self.use_promoters:
+			for i in range(self.stateN):
+				print("Promoter\t{}\t{}".format(i, self.betas[0, i]),
+					  file=output)
+		if self.use_cres:
+			for i in range(self.stateN):
+				print("CRE\t{}\t{}".format(i, self.betas[-1, i]), file=output)
 		output.close()
 
 	def write_correlations(self):
@@ -327,19 +347,23 @@ class LinReg(object):
 					expression=self.data[i].rna['rna'][:, j])
 				print(f"{self.genomes[i]}\t{self.data[i].celltypes[j]}\t{adjR2}",
 					  file=output)
+			px, py, pz = self.data[i].pfeatures.shape
+			cx, cy, cz = self.data[i].cfeatures.shape
 			adjR2, _ = self.find_adjR2(
-				pfeatures=self.data[i].pfeatures.reshape(-1, self.stateN, order="c"),
-				cfeatures=self.data[i].cfeatures.reshape(-1, self.stateN, order="c"),
+				pfeatures=self.data[i].pfeatures.reshape(px * py, pz, order="c"),
+				cfeatures=self.data[i].cfeatures.reshape(cx * cy, cz, order="c"),
 				expression=self.data[i].rna['rna'].reshape(-1, order="c"))
 			print(f"{self.genomes[i]}\tAll\t{adjR2}", file=output)
 		pfeatures = []
 		cfeatures = []
 		expression = []
 		for i in range(self.genomeN):
+			px, py, pz = self.data[i].pfeatures.shape
+			cx, cy, cz = self.data[i].cfeatures.shape
 			pfeatures.append(self.data[i].pfeatures.reshape(
-				-1, self.stateN, order="c"))
+				px * py, pz, order="c"))
 			cfeatures.append(self.data[i].cfeatures.reshape(
-				-1, self.stateN, order="c"))
+				cx * cy, cz, order="c"))
 			expression.append(self.data[i].rna['rna'].reshape(-1, order="c"))
 		adjR2, _ = self.find_adjR2(
 			pfeatures=numpy.concatenate(pfeatures, axis=0),
@@ -374,6 +398,7 @@ class GenomeData(object):
 
 		self.genome = genome
 		self.cre_fname = cre
+		self.use_cres = self.cre_fname is not None
 		self.state_fname = state
 		self.rna_fname = rna
 		self.get_valid_celltypes()
@@ -421,6 +446,9 @@ class GenomeData(object):
 						 self.genome, ', '.join(list(self.celltypes))))
 
 	def load_CREs(self):
+		if self.cre_fname is None:
+			self.cre = None
+			return
 		if self.verbose >= 2:
 			print(f"\r{' '*80}\rLoading {self.genome} cCRE data",
 				  end='', file=sys.stderr)
@@ -471,8 +499,6 @@ class GenomeData(object):
 			for line in fs:
 				line = line.rstrip('\r\n').split()
 				chrom, tss, strand = line[:3]
-				if chrom not in self.chr2int:
-					continue
 				temp.append(tuple([chrom, int(tss), gene, strand2bool[strand]] + line[3:]))
 			fs.close()
 			dtype = [('chr', self.chroms.dtype), ('TSS', numpy.int32), ('strand', bool)]
@@ -481,9 +507,6 @@ class GenomeData(object):
 			temp = numpy.array(temp, dtype=dtype)
 		temp.sort(order=["chr", "TSS"])
 		self.chroms = numpy.unique(temp['chr'])
-		self.chr2int = {}
-		for i, chrom in enumerate(self.chroms):
-			self.chr2int[chrom] = i
 		self.rna_cindices = numpy.zeros(self.cellN + 1, dtype=numpy.int32)
 		for name in header[3:]:
 			where = numpy.where(self.celltypes == name.split('_')[0])[0]
@@ -539,8 +562,6 @@ class GenomeData(object):
 			for line in fs:
 				line = line.rstrip('\r\n').split()
 				binID, chrom, start, end = line[:4]
-				if chrom not in self.chr2int:
-					continue
 				temp.append(tuple([chrom, int(start), int(end)] + line[4:-1]))
 			fs.close()
 			dtype = [('chr', self.chroms.dtype), ('start', numpy.int32), ('end', numpy.int32)]
@@ -585,13 +606,18 @@ class GenomeData(object):
 
 	def filter_by_chromosomes(self):
 		r_chroms = set(numpy.unique(self.rna['chr']))
-		c_chroms = set(numpy.unique(self.cre['chr']))
 		s_chroms = set(numpy.unique(self.state['chr']))
+		if self.cre is None:
+			c_chroms = set(s_chroms)
+		else:
+			c_chroms = set(numpy.unique(self.cre['chr']))
 		chroms = numpy.array(list(r_chroms.intersection(c_chroms.intersection(s_chroms))),
 							 dtype='U')
 		chroms.sort()
 		self.chroms = chroms
 		for name in ['cre', 'rna', 'state']:
+			if not self.use_cres and name == 'cre':
+				continue
 			data = self[name]
 			valid = numpy.zeros(data.shape[0], bool)
 			indices = numpy.zeros(chroms.shape[0] + 1, dtype=numpy.int32)
@@ -601,7 +627,10 @@ class GenomeData(object):
 				indices[i + 1] = indices[i] + where.shape[0]
 			self[name] = data[numpy.where(valid)]
 			self["{}_indices".format(name)] = indices
-		self.creN = self.cre.shape[0]
+		if self.cre is None:
+			self.creN = 0
+		else:
+			self.creN = self.cre.shape[0]
 		self.tssN = self.rna.shape[0]
 		self.chromN = self.chroms.shape[0]
 		self.chr2int = {}
@@ -618,7 +647,9 @@ class GenomeData(object):
 		self.shuffle = shuffle
 		self.initialization_dist = initialization_dist
 		self.cre_dist = cre_dist
+		self.use_cres = self.cre_dist > 0 and self.use_cres
 		self.promoter_dist = promoter_dist
+		self.use_promoters = self.promoter_dist > 0
 		if self.shuffle == 'tss':
 			self.order = numpy.arange(self.tssN)
 			self.rng.shuffle(self.order)
@@ -627,6 +658,10 @@ class GenomeData(object):
 
 	def assign_promoter_states(self):
 		"""Find the proportion of states in each promoter window"""
+		if not self.use_promoters:
+			self.pfeatures = numpy.zeros((self.tssN, self.cellN, 0),
+										 dtype=numpy.float32)
+			return
 		if self.verbose >= 2:
 			print(f"\r{' '*80}\rAssign states to {self.genome} promoters",
 				  end='', file=sys.stderr)
@@ -651,7 +686,6 @@ class GenomeData(object):
 									   side='left') + s1
 			Pranges[s:e, 0] = starts
 			Pranges[s:e, 1] = stops - 1
-		self.Pranges = Pranges
 		# Even though there may be multiple reps for a celltype,
 		# we only find the average state proportion across reps
 		Pstates2 = numpy.zeros((self.tssN, self.stateRepN, self.stateN),
@@ -694,6 +728,10 @@ class GenomeData(object):
 			print(f"\r{' '*80}\r", end='', file=sys.stderr)
 
 	def assign_CRE_states(self):
+		if not self.use_cres:
+			self.cfeatures = numpy.zeros((self.tssN, self.cellN, 0),
+										 dtype=numpy.float32)
+			return
 		"""Find the proportion of states in each cCRE"""
 		if self.verbose >= 2:
 			print(f"\r{' '*80}\rAssign states to {self.genome} CREs",
@@ -754,9 +792,9 @@ class GenomeData(object):
 
 	def find_initial_features(self):
 		self.assign_promoter_states()
-		self.cfeatures = numpy.zeros((self.tssN, self.cellN, self.stateN),
-									 dtype=numpy.float32)
 		self.assign_CRE_states()
+		if not self.use_cres:
+			return
 		tss_ranges = numpy.zeros((self.tssN, 2), dtype=numpy.int32)
 		tss_indices = numpy.zeros(self.tssN + 1, dtype=numpy.int32)
 		for i in range(self.chromN):
@@ -779,8 +817,10 @@ class GenomeData(object):
 				continue
 			pairs[s:e, 0] = i
 			pairs[s:e, 1] = numpy.arange(tss_ranges[i, 0], tss_ranges[i, -1])
-		pair_indices = numpy.r_[0, numpy.cumsum(numpy.bincount(pairs[:, 0],
-															   minlength=self.tssN))]
+		pair_indices = numpy.r_[0, numpy.cumsum(numpy.bincount(
+			pairs[:, 0], minlength=self.tssN))]
+		self.cfeatures = numpy.zeros((self.tssN, self.cellN, self.stateN),
+									 dtype=numpy.float32)
 		for i in range(self.tssN):
 			s, e = pair_indices[i:(i+2)]
 			if e == s:
@@ -897,9 +937,15 @@ class GenomeData(object):
 			pfeatures = self.pfeatures[:, self.lo_mask, :]
 		if cfeatures is None:
 			cfeatures = self.cfeatures[:, self.lo_mask, :]
-		predicted = numpy.sum(pfeatures * betas[0, :].reshape(1, 1, -1) +
-							  cfeatures * betas[-1, :].reshape(1, 1, -1),
-							  axis=2)
+		if self.use_promoters:
+			predicted = numpy.sum(pfeatures * betas[0, :].reshape(1, 1, -1),
+								  axis=2)
+			if self.use_cres:
+				predicted += numpy.sum(cfeatures * betas[-1, :].reshape(1, 1, -1),
+							           axis=2)
+		else:
+			predicted = numpy.sum(cfeatures * betas[-1, :].reshape(1, 1, -1),
+					              axis=2)
 		return predicted
 
 	def find_MSE(self, betas, expression=None, pfeatures=None, cfeatures=None):
@@ -932,9 +978,14 @@ class GenomeData(object):
 									betas[-1, :].reshape(1, 1, -1), axis=2).astype(
 									numpy.float32)
 			tstart, tend = self.rna_indices[c:(c+2)]
-			pStateBetas = numpy.sum(self.pfeatures[tstart:tend, self.lo_mask, :] *
-									betas[0, :].reshape(1, 1, -1),
-									axis=2).astype(numpy.float32)
+			if self.use_promoters:
+				pStateBetas = numpy.sum(self.pfeatures[tstart:tend,
+													   self.lo_mask, :] *
+										betas[0, :].reshape(1, 1, -1),
+										axis=2).astype(numpy.float32)
+			else:
+				pStateBetas = numpy.zeros((tend - tstart, self.lo_N),
+									      dtype=numpy.float32)
 			RNA = numpy.copy(self.rna['rna'][tstart:tend, self.lo_mask])
 			jstart, jend = self.joint_indices[c:(c+2)]
 			joint = numpy.copy(self.joint_EP[jstart:jend, :])
@@ -1001,14 +1052,16 @@ class GenomeData(object):
 		output.close()
 
 	def write_order(self, out_prefix):
-		if self.shuffle =='tss':
+		if self.shuffle == 'tss' and self.use_promoters:
 			output = open(f"{out_prefix}_{self.genome}_gene_order.txt", "w")
-		else:
+		elif self.shuffle == 'cre' and self.use_cres:
 			output = open(f"{out_prefix}_{self.genome}_cre_order.txt", "w")
+		else:
+			return
 		for i in self.order:
 			print(i, file=output)
 		output.close()
-		if self.shuffle == 'cre':
+		if self.shuffle == 'cre' and self.use_promoters:
 			output = open(f"{out_prefix}_{self.genome}_promoter_order.txt", "w")
 			for i in self.order2:
 				print(i, file=output)
@@ -1030,11 +1083,12 @@ class GenomeData(object):
 								 betas[-1, :].reshape(1, 1, -1), axis=2)
 			for i in TSSs:
 				TSS = self.rna[i]
-				promoter = numpy.sum(self.pfeatures[i, :, :] *
-									 betas[:1, :], axis=1)
-				temp = "\t".join([f"{x}" for x in promoter])
-				print(f"{TSS['chr']}\t{TSS['TSS']}\t{-1}\t{-1}\t{temp}",
-					  file=output)
+				if self.use_promoters:
+					promoter = numpy.sum(self.pfeatures[i, :, :] *
+										 betas[:1, :], axis=1)
+					temp = "\t".join([f"{x}" for x in promoter])
+					print(f"{TSS['chr']}\t{TSS['TSS']}\t{-1}\t{-1}\t{temp}",
+						  file=output)
 				for j, c in enumerate(CREs):
 					CRE = self.cre[c]
 					temp = "\t".join([f"{x}" for x in eRPs[j, :]])
