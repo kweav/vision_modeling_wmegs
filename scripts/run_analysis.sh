@@ -3,6 +3,13 @@
 #usage: ./run_analysis.sh [nolo | lo] [nearest | standard] [mm10 | hg38]
 #note: [mm10 | hg38] command line argument is only needed if $1 is lo
 
+# date; time ./run_analysis.sh nolo nearest &> ../results/nearest_gene_run_06142022/out_nolo_nearest.txt on screen 11985.pts-0.comp2
+# date; time ./run_analysis.sh nolo standard &> ../results/nearest_gene_run_06142022/out_nolo_standard.txt on screen 12148.pts-0.comp2
+# date; time ./run_analysis.sh lo nearest mm10 &> ../results/nearest_gene_run_06142022/out_lo_nearest_mm10.txt on screen 12732.pts-0.comp2
+# date; time ./run_analysis.sh lo nearest hg38 &> ../results/nearest_gene_run_06142022/out_lo_nearest_hg38.txt on screen 13024.pts-0.comp2
+# date; time ./run_analysis.sh lo standard mm10 &> ../results/nearest_gene_run_06142022/out_lo_standard_mm10.txt on screen 13168.pts-0.comp2
+# date; time ./run_analysis.sh lo standard hg38 &> ../results/nearest_gene_run_06142022/out_lo_standard_hg38.txt on screen 13451.pts-0.comp2
+
 # ran these base analyses without leaving out genome/celltype combos
 if [ $1 = "nolo" ]; then
 	if [ $2 = "nearest" ]; then
@@ -11,7 +18,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_shuffle_tss \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_shuffle_tss \
 		-v 3 --nearest-gene --shuffle tss
 
 		#nearest gene
@@ -20,7 +27,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_shuffle_tss_tssonly \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_shuffle_tss_tssonly \
 		-v 3 --nearest-gene --shuffle tss --cre-dist 0
 
 		#nearest gene
@@ -28,7 +35,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_shuffle_cre \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_shuffle_cre \
 		-v 3 --nearest-gene --shuffle cre
 
 		#nearest gene
@@ -37,14 +44,14 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_shuffle_cre_creonly \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_shuffle_cre_creonly \
 		-v 3 --nearest-gene --shuffle cre --promoter-dist 0
 
 		#nearest gene
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng \
 		-v 3 --nearest-gene
 
 		#nearest gene
@@ -52,7 +59,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_tssonly \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_tssonly \
 		-v 3 --nearest-gene --cre-dist 0
 
 		#nearest gene
@@ -60,7 +67,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_creonly \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_creonly \
 		-v 3 --nearest-gene --promoter-dist 0
 	fi
 
@@ -69,7 +76,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard \
 		-v 3
 
 		#standard
@@ -77,7 +84,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_tssonly \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_tssonly \
 		-v 3 --cre-dist 0
 
 		#standard
@@ -85,7 +92,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_creonly \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_creonly \
 		-v 3 --promoter-dist 0
 
 		#standard
@@ -93,7 +100,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_shuffle_tss \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_shuffle_tss \
 		-v 3 --shuffle tss
 
 		#standard
@@ -102,7 +109,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_shuffle_tss_tssonly \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_shuffle_tss_tssonly \
 		-v 3 --shuffle tss --cre-dist 0
 
 		#standard
@@ -110,7 +117,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_shuffle_cre \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_shuffle_cre \
 		-v 3 --shuffle cre
 
 		#standard
@@ -119,7 +126,7 @@ if [ $1 = "nolo" ]; then
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_shuffle_cre_creonly \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_shuffle_cre_creonly \
 		-v 3 --shuffle cre --promoter-dist 0
 	fi
 fi
@@ -132,7 +139,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_shuffle_tss_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_shuffle_tss_lo_${1}_${2} \
 		-v 3 --nearest-gene --shuffle tss -l ${1},${2}
 
 		#nearest gene
@@ -141,7 +148,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_shuffle_tss_tssonly_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_shuffle_tss_tssonly_lo_${1}_${2} \
 		-v 3 --nearest-gene --shuffle tss --cre-dist 0 -l ${1},${2}
 
 		#nearest gene
@@ -149,7 +156,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_shuffle_cre_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_shuffle_cre_lo_${1}_${2} \
 		-v 3 --nearest-gene --shuffle cre -l ${1},${2}
 
 		#nearest gene
@@ -158,14 +165,14 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_shuffle_cre_creonly_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_shuffle_cre_creonly_lo_${1}_${2} \
 		-v 3 --nearest-gene --shuffle cre --promoter-dist 0 -l ${1},${2}
 
 		#nearest gene
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_lo_${1}_${2} \
 		-v 3 --nearest-gene -l ${1},${2}
 
 		#nearest gene
@@ -173,7 +180,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_tssonly_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_tssonly_lo_${1}_${2} \
 		-v 3 --nearest-gene --cre-dist 0 -l ${1},${2}
 
 		#nearest gene
@@ -181,7 +188,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/ng_creonly_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/ng_creonly_lo_${1}_${2} \
 		-v 3 --nearest-gene --promoter-dist 0 -l ${1},${2}
 	fi
 	if [ $3 = "standard" ]; then
@@ -189,7 +196,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_lo_${1}_${2} \
 		-v 3 -l ${1},${2}
 
 		#standard refinement
@@ -197,7 +204,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_tssonly_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_tssonly_lo_${1}_${2} \
 		-v 3 --cre-dist 0 -l ${1},${2}
 
 		#standard refinement
@@ -205,7 +212,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_creonly_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_creonly_lo_${1}_${2} \
 		-v 3 --promoter-dist 0 -l ${1},${2}
 
 		#standard refinement
@@ -213,7 +220,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_shuffle_tss_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_shuffle_tss_lo_${1}_${2} \
 		-v 3 --shuffle tss -l ${1},${2}
 
 		#standard refinement
@@ -222,7 +229,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_shuffle_tss_tssonly_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_shuffle_tss_tssonly_lo_${1}_${2} \
 		-v 3 --shuffle tss --cre-dist 0 -l ${1},${2}
 
 		#standard refinement
@@ -230,7 +237,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_shuffle_cre_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_shuffle_cre_lo_${1}_${2} \
 		-v 3 --shuffle cre -l ${1},${2}
 
 		#standard refinement
@@ -239,7 +246,7 @@ function call_it {
 		date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
 		-s ../data/mm10_state.npy ../data/hg38_state.npy \
 		-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
-		-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_shuffle_cre_creonly_lo_${1}_${2} \
+		-g mm10 hg38 -o ../results/nearest_gene_run_06142022/standard_shuffle_cre_creonly_lo_${1}_${2} \
 		-v 3 --shuffle cre --promoter-dist 0 -l ${1},${2}
 	fi
 }
