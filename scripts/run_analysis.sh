@@ -2,9 +2,8 @@
 
 #usage: ./run_analysis.sh [nolo | lo] [mm10 | hg38]
 
-
+# ran these base analyses without leaving out genome/celltype combos
 if [ $1 = "nolo" ]; then
-	# ran these base analyses without leaving out genome/celltype combos
 
 	#nearest gene
 	##shuffle tss
@@ -121,9 +120,10 @@ if [ $1 = "nolo" ]; then
 	-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_shuffle_cre_creonly \
 	-v 3 --shuffle cre --promoter-dist 0
 fi
-# ran these extended analyses leaving out genome/cell type combos for each base analysis
 
+# ran these extended analyses leaving out genome/cell type combos for each base analysis
 function call_it {
+
 	#nearest gene
 	##shuffle tss
 	date; time python JointCRE_reformatted.py -r ../data/mm10_rna_all.npy ../data/hg38_rna_all.npy \
@@ -237,13 +237,21 @@ function call_it {
 	-c ../data/mm10_cre.npy ../data/hg38_cre.npy \
 	-g mm10 hg38 -o ../results/nearest_gene_run_06022022/standard_shuffle_cre_creonly_lo_${1}_${2} \
 	-v 3 --shuffle cre --promoter-dist 0 -l ${1},${2}
+
 }
 
 if [ $1 = "lo" ]; then
 	genome=$2
-
-	for celltype in CFUE ERY iMK MON CMP G1E LSK NEU ER4 GMP MEP
-	do
-		call_it $genome $celltype
-	done
+	if [ $genome = "mm10" ]; then
+		for celltype in CFUE ERY iMK MON CMP G1E LSK NEU ER4 GMP MEP
+		do
+			call_it $genome $celltype
+		done
+	fi
+	if [ $genome = "hg38" ]; then
+		for celltype in B EOS HUDEP1 MK MPP CLP ERY HUDEP2 MONc NEU CMP GMP MEP MONp NK
+		do
+			call_it $genome $celltype
+		done
+	fi
 fi
