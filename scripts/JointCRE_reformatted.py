@@ -183,12 +183,14 @@ class LinReg(object):
 		features = []
 		for i in range(self.genomeN):
 			x, y, z = self.data[i].pfeatures.shape
+			y = self.data[i].lo_N
 			features.append(self.data[i].pfeatures[
 				:, self.lo_mask[i], :].reshape(x * y, z, order="c"))
 		self.pfeatures = numpy.concatenate(features, axis=0)
 		features = []
 		for i in range(self.genomeN):
 			x, y, z = self.data[i].cfeatures.shape
+			y = self.data[i].lo_N
 			features.append(self.data[i].cfeatures[
 				:, self.lo_mask[i], :].reshape(x * y, z, order="c"))
 		self.cfeatures = numpy.concatenate(features, axis=0)
