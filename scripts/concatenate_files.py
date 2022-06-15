@@ -35,7 +35,7 @@ def generate_parser():
 
 def add_columns(filename, filetype):
 	dtypes = [("Genome", "<U4"), ("CT", "<U30"), ("R2", np.float32)]
-	indf = np.loadtxt(filename, dtype=np.dtype(dtypes), skiprows=1)
+	indf = pd.DataFrame(np.loadtxt(filename, dtype=np.dtype(dtypes), skiprows=1), columns = ["Genome", "CT", "R2"])
 	filetypewords = {"scb": {"exp": "standard",
 							 "condition": "control",
 							 "features": "both"},
@@ -79,10 +79,10 @@ def add_columns(filename, filetype):
 							   "condition": "shuffletss",
 							   "features": "promoter"}}
 
-	indf['Experiment'] = filetypewords[filetype]["exp"]
-	indf['Condition'] = filetypewords[filetype]["condition"]
-	indf['Features'] = filetypewords[filetype]["features"]
-	indf['Rep'] = 0
+	indf["Experiment"] = filetypewords[filetype]["exp"]
+	indf["Condition"] = filetypewords[filetype]["condition"]
+	indf["Features"] = filetypewords[filetype]["features"]
+	indf["Rep"] = 0
 	return indf
 
 def concatenate_together(args):
