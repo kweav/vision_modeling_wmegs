@@ -11,8 +11,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 def main():
     in_fname, out_fname = sys.argv[1:3]
-    dtypes = [('Condition', "<U7"), ("Genome", "<U4"), ('Features', "<U8"),
-              ("CT", "<U30"), ("Rep", numpy.int32), ("R2", numpy.float32)]
+    dtypes = [("Genome", "<U4"), ("CT", "<U30"), ("R2", numpy.float32),
+              ('Experiment', "<U8" ), ('Condition', "<U10"), ('Features', "<U8"), ("Rep", numpy.int32)]
     alldata = numpy.loadtxt(in_fname, dtype=numpy.dtype(dtypes), skiprows=1)
     alldata = alldata[numpy.where(alldata['Rep'] == 0)]
     fig, all_ax = plt.subplots(2, 1, figsize=(8,6),
@@ -31,10 +31,11 @@ def main():
         X = []
         Y = []
         offset1 = {'both': 0.5, 'promoter': 2.5, 'cre': 4.5}
-        offset2 = {'treat': 0.1, 'control': 0.8}
+        offset2 = {'shufflecre': 0.1, 'shuffletss': 0.1, 'control': 0.8}
+        offset3 = {'standard': 0.5, 'nearest': 0.5}
         for i in range(data.shape[0]):
             Y.append(data['R2'][i])
-            X.append(offset1[data['Features'][i]] + offset2[data['Condition'][i]])
+            X.append(offset1[data['Features'][i]] + offset2[data['Condition'][i]] + offset3[data['Experiment'][i]])
             X[-1] += (numpy.random.random() - 0.5) * 0.5
             pcolor.append(color_dict[data['CT'][i]])
         ax.scatter(X, Y, color=pcolor, marker=shape_dict[g])
