@@ -86,9 +86,7 @@ def add_columns(filename, filetype):
 	return indf
 
 def concatenate_together(args):
-	dtypes = [("Genome", "<U4"), ("CT", "<U30"), ("R2", np.float32),
-			  ('Experiment', "<U8" ),('Condition', "<U10"), ('Features', "<U8"), ("Rep", np.int32)]
-	newarr = pd.DataFrame(dtypes = np.dtype(dtypes))
+	newarr = pd.DataFrame()
 	for filename, filetype in zip([args.scb, args.sscb, args.sstb, args.scco, args.scto, args.sscco, args.sstto, args.ncb, args.nscb, args.nstb, args.ncco, args.ncto, args.nscco, args.nstto],
 									["scb", "sscb", "sstb", "scco", "scto", "sscco", "sstto", "ncb", "nscb", "nstb", "ncco", "ncto", "nscco", "nstto"]):
 		new_arr = pd.concat([new_arr, add_columns(filename, filetype)])
