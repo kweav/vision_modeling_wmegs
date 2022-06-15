@@ -89,7 +89,7 @@ def concatenate_together(args):
 	newarr = pd.DataFrame()
 	for filename, filetype in zip([args.scb, args.sscb, args.sstb, args.scco, args.scto, args.sscco, args.sstto, args.ncb, args.nscb, args.nstb, args.ncco, args.ncto, args.nscco, args.nstto],
 									["scb", "sscb", "sstb", "scco", "scto", "sscco", "sstto", "ncb", "nscb", "nstb", "ncco", "ncto", "nscco", "nstto"]):
-		new_arr = pd.concat([new_arr, add_columns(filename, filetype)])
-	return new_arr
+		newarr = pd.concat([newarr, add_columns(filename, filetype)])
+	return newarr
 
 main()
