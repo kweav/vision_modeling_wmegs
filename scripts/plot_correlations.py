@@ -13,7 +13,7 @@ def main():
     in_fname, out_fname = sys.argv[1:3]
     dtypes = [("Genome", "<U4"), ("CT", "<U30"), ("R2", numpy.float32),
               ('Experiment', "<U8" ), ('Condition', "<U10"), ('Features', "<U8"), ("Rep", numpy.int32)]
-    alldata = numpy.loadtxt(in_fname, dtype=numpy.dtype(dtypes), skiprows=1)
+    alldata = numpy.loadtxt(in_fname, dtype=numpy.dtype(dtypes), skiprows=1, usecols=(1,2,3,4,5,6,7))
     alldata = alldata[numpy.where(alldata['Rep'] == 0)]
     fig, all_ax = plt.subplots(2, 1, figsize=(8,6),
                                gridspec_kw={'height_ratios': (7, 1)})
