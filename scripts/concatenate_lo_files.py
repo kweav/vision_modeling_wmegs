@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-Usage:  python ../../scripts/concatenate_lo_files.py --standard-control-both --standard-shufflecre-both --standard-shuffletss-both --standard-control-creonly --standard-control-tssonly --standard-shufflecre-creonly --standard-shuffletss-tssonly --nearest-control-both --nearest-shufflecre-both --nearest-shuffletss-both --nearest-control-creonly --nearest-control-tssonly --nearest-shufflecre-creonly --nearest-shuffletss-tssonly --outfile lo_longdf.txt
+Usage:  python ../../scripts/concatenate_lo_files.py --standard-control-both standard_lo_*correlations.txt --standard-shufflecre-both standard_shuffle_cre_lo_*correlations.txt --standard-shuffletss-both standard_shuffle_tss_lo_*correlations.txt --standard-control-creonly standard_creonly_lo_*correlations.txt --standard-control-tssonly standard_tssonly_lo_*correlations.txt --standard-shufflecre-creonly standard_shuffle_cre_creonly_lo_*correlations.txt --standard-shuffletss-tssonly standard_shuffle_tss_tssonly_lo_*correlations.txt --nearest-control-both ng_lo_*correlations.txt --nearest-shufflecre-both ng_shuffle_cre_lo_*correlations.txt --nearest-shuffletss-both ng_shuffle_tss_lo_*correlations.txt --nearest-control-creonly ng_creonly_lo_*correlations.txt --nearest-control-tssonly ng_tssonly_lo_*correlations.txt --nearest-shufflecre-creonly ng_shuffle_cre_creonly_lo_*correlations.txt --nearest-shuffletss-tssonly ng_shuffle_tss_tssonly_lo_*correlations.txt --outfile lo_longdf.txt
 '''
 
 import argparse

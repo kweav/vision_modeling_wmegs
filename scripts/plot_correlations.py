@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+'''
+Usage:
+python ../../scripts/plot_correlations.py nolo_longdf.txt plottingnolo.pdf
+python ../../scripts/plot_correlations.py lo_longdf.txt plottinglo.pdf
+
+'''
+
+
 import sys
 
 import numpy
