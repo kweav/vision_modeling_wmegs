@@ -42,7 +42,7 @@ def main():
     ax.set_ylabel(r'Adjusted R^2')
     ax.set_xticks([1.1, 1.45, 1.8, 3.1, 3.45, 3.8, 5.1, 5.45, 5.8, 7.1, 7.45, 7.8, 9.1, 9.45, 9.8, 11.1, 11.45, 11.8])
     ax.set_xticklabels(numpy.tile(['ShC', 'ShP', 'C'], 6))
-    ax.text(5), -0.3, 'Standard Refinement', horizontalalignment='center')
+    ax.text(5, -0.3, 'Standard Refinement', horizontalalignment='center')
     ax.text(9, -0.3, 'Nearest Gene', horizontalalignment='center')
     ax.text(1, -0.15, "Promoters+CREs", horizontalalignment='center')
     ax.text(3, -0.15, "Promoters", horizontalalignment='center')
