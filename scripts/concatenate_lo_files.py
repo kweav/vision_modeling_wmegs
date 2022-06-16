@@ -91,8 +91,9 @@ def add_columns(filename, filetype):
 
 def concatenate_together(args):
 	newarr = pd.DataFrame()
-	for filename, filetype in zip([args.scb, args.sscb, args.sstb, args.scco, args.scto, args.sscco, args.sstto, args.ncb, args.nscb, args.nstb, args.ncco, args.ncto, args.nscco, args.nstto],
-									[np.tile(["scb"], len(args.scb)), np.tile(["sscb"], len(args.sscb)), np.tile(["sstb"], len(args.sstb)), np.tile(["scco"], len(args.sstb)), np.tile(["scto"], len(args.scto)), np.tile(["sscco"], len(args.sscco)), np.tile(["sstto"], len(args.sstto)), np.tile(["ncb"], len(args.ncb)), np.tile(["nscb"], len(args.nscb)), np.tile(["nstb"], len(args.nstb)), np.tile(["ncco"], len(args.ncco)), np.tile(["ncto"], len(args.ncto)), np.tile(["nscco"], len(args.nscco)), np.tile(["nstto"], len(args.nstto))]):
+	files = np.flatten([args.scb, args.sscb, args.sstb, args.scco, args.scto, args.sscco, args.sstto, args.ncb, args.nscb, args.nstb, args.ncco, args.ncto, args.nscco, args.nstto])
+	filetypes = [np.tile(["scb"], len(args.scb)), np.tile(["sscb"], len(args.sscb)), np.tile(["sstb"], len(args.sstb)), np.tile(["scco"], len(args.sstb)), np.tile(["scto"], len(args.scto)), np.tile(["sscco"], len(args.sscco)), np.tile(["sstto"], len(args.sstto)), np.tile(["ncb"], len(args.ncb)), np.tile(["nscb"], len(args.nscb)), np.tile(["nstb"], len(args.nstb)), np.tile(["ncco"], len(args.ncco)), np.tile(["ncto"], len(args.ncto)), np.tile(["nscco"], len(args.nscco)), np.tile(["nstto"], len(args.nstto))]
+	for i, (filename, filetype) in enumerate(zip(files, filetytpes)):
 		newarr = pd.concat([newarr, add_columns(filename, filetype)])
 	return newarr
 
