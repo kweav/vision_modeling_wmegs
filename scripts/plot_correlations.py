@@ -30,21 +30,24 @@ def main():
         pshape = []
         X = []
         Y = []
+        offset0 = {'standard:' 0.5, 'nearest':6.5}
         offset1 = {'both': 0.5, 'promoter': 2.5, 'cre': 4.5}
-        offset2 = {'shufflecre': 0.1, 'shuffletss': 0.1, 'control': 0.8}
-        offset3 = {'standard': 0.5, 'nearest': 0.5}
+        offset2 = {'shufflecre': 0.1, 'shuffletss': 0.45, 'control': 0.8}
         for i in range(data.shape[0]):
             Y.append(data['R2'][i])
-            X.append(offset1[data['Features'][i]] + offset2[data['Condition'][i]] + offset3[data['Experiment'][i]])
+            X.append(offset1[data['Features'][i]] + offset2[data['Condition'][i]] + offset0[data['Experiment'][i]])
             X[-1] += (numpy.random.random() - 0.5) * 0.5
             pcolor.append(color_dict[data['CT'][i]])
         ax.scatter(X, Y, color=pcolor, marker=shape_dict[g])
     ax.set_ylabel(r'Adjusted R^2')
-    ax.set_xticks([0.6, 1.3, 2.6, 3.3, 4.6, 5.3])
-    ax.set_xticklabels(["T", "C", "T", "C", "T", "C"])
+    ax.set_xticks([1.1, 1.45, 1.8, 3.1, 3.45, 3.8, 5.1, 5.45, 5.8, 7.1, 7.45, 7.8, 9.1, 9.45, 9.8, 11.1, 11.45, 11.8])
+    ax.set_xticklabels(numpy.rep(['ShC', 'ShP', 'C'], 6))
+    ax.text(2.5, -1, 'Standard Refinement', horizontalalignment='center')
+    ax.text(7.5, -1, 'Nearest Gene', horizontalalignment='center')
     ax.text(1, -0.1, "Promoters+CREs", horizontalalignment='center')
-    ax.text(3, -0.1, "Promoters", horizontalalignment='center')
-    ax.text(5, -.1, "CREs", horizontalalignment='center')
+    ax.text(7, -0.1, "Promoters+CREs", horizontalalignment='center')
+    ax.text(9, -0.1, "Promoters", horizontalalignment='center')
+    ax.text(11, -.1, "CREs", horizontalalignment='center')
     ax = all_ax[1]
     ax.set_xlim(0, 8)
     ax.set_ylim(0, 3)
