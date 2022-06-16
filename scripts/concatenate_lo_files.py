@@ -40,6 +40,9 @@ def generate_parser():
 def add_columns(filename, filetype):
 	dtypes = [("Genome", "<U4"), ("CT", "<U30"), ("R2", np.float32)]
 	indf = pd.DataFrame(np.loadtxt(filename, dtype=np.dtype(dtypes), skiprows=1), columns = ["Genome", "CT", "R2"])
+	goi, ctoi = filename.split("lo")[1].split("_")[1:3]
+	roi = (indf["Genome"] == goi) & (indf["CT"] == ctoi)
+	indf = indf.loc[roi,]
 	filetypewords = {"scb": {"exp": "standard",
 							 "condition": "control",
 							 "features": "both"},
