@@ -30,7 +30,7 @@ def main():
         pshape = []
         X = []
         Y = []
-        offset0 = {'standard:' 0.5, 'nearest':6.5}
+        offset0 = {'standard': 0.5, 'nearest':6.5}
         offset1 = {'both': 0.5, 'promoter': 2.5, 'cre': 4.5}
         offset2 = {'shufflecre': 0.1, 'shuffletss': 0.45, 'control': 0.8}
         for i in range(data.shape[0]):
