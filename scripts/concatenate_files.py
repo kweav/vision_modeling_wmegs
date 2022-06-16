@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+'''
+Usage:  python ../../scripts/concatenate_files.py --standard-control-both standard_correlations.txt --standard-shufflecre-both standard_shuffle_cre_correlations.txt --standard-shuffletss-both standard_shuffle_tss_correlations.txt --standard-control-creonly standard_creonly_correlations.txt --standard-control-tssonly standard_tssonly_correlations.txt --standard-shufflecre-creonly standard_shuffle_cre_creonly_correlations.txt --standard-shuffletss-tssonly standard_shuffle_tss_tssonly_correlations.txt --nearest-control-both ng_correlations.txt --nearest-shufflecre-both ng_shuffle_cre_correlations.txt --nearest-shuffletss-both ng_shuffle_tss_correlations.txt --nearest-control-creonly ng_creonly_correlations.txt --nearest-control-tssonly ng_tssonly_correlations.txt --nearest-shufflecre-creonly ng_shuffle_cre_creonly_correlations.txt --nearest-shuffletss-tssonly ng_shuffle_tss_tssonly_correlations.txt --outfile nolo_longdf.txt
+'''
+
 import argparse
 import numpy as np
 import pandas as pd
